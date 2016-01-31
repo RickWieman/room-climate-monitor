@@ -1,0 +1,15 @@
+<head>
+	<title>Room Climate Monitor</title>
+</head>
+
+<body>
+	<div class="container">
+		<h1>Room Climate Monitor</h1>
+
+		{{> chart chart_id="history"}}
+	</div>
+</body>
+
+<template name="chart">
+	<div id="{{chart_id}}"></div>
+</template>
