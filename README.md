@@ -61,3 +61,5 @@ systemctl start ${SERVICE_NAME}
 ## Gathering data
 
 Just booting this system won't give you any data, it is merely a (simple) visualisation of a MongoDB collection. I use an [AM2302](http://akizukidenshi.com/download/ds/aosong/AM2302.pdf) sensor wired to the GPIO pins of the Pi, together with the [Adafruit DHT library](https://github.com/adafruit/Adafruit_Python_DHT) to insert measurements directly into the MongoDB collection (using `pymongo`).
+
+The data format used is straight-forward, namely a document with three fields: `ts` containing the timestamp (as integer, in milliseconds), `temperature` containing the measured temperature (as float, or integer as desired) and `humidity` containing the measured humidity (as float, or integer as desired).
