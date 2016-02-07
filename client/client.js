@@ -1,32 +1,21 @@
 Temperature = new Meteor.Collection("temperature");
 
-var chart, initializing = true;
+var chart, initializing = true, pointsAdded = 0;
 
-// Fetch initial measurements and add that dataset to the chart
+// When all data is downloaded, the initialization is completed
 Meteor.subscribe("temperature", function() {
-	var measurements = Temperature.find({}, { sort: { ts: 1 } });
-
-	var temperatureData = measurements.map(function(entry) {
-		return [ entry['ts'], entry['temperature'] ];
-	});
-
-	var humidityData = measurements.map(function(entry) {
-		return [ entry['ts'], entry['humidity'] ];
-	});
-
-	chart.series[0].setData(humidityData);
-	chart.series[1].setData(temperatureData);
-
 	initializing = false;
+	chart.redraw();
 });
 
-// Add newly inserted measurements to the chart
-Temperature.find({}).observeChanges({
+// Add measurements of the past week to the chart
+// Redraw only after initialization or after receiving one day of data points (6 * 24 = 144)
+// Shift if we have one week of data (144 * 7 = 1008)
+Temperature.find({ ts: { $gt: new Date().getTime() - (7 * 24 * 60 * 60 * 1000) } }, { sort: { ts: 1 } }).observeChanges({
 	added: function(id, fields) {
-		if (!initializing) {
-			chart.series[0].addPoint([fields['ts'], fields['humidity']]);
-			chart.series[1].addPoint([fields['ts'], fields['temperature']]);
-		}
+		chart.series[0].addPoint([fields['ts'], fields['humidity']], (!initializing || pointsAdded % 144 == 0), (pointsAdded >= 1008));
+		chart.series[1].addPoint([fields['ts'], fields['temperature']], (!initializing || pointsAdded % 144 == 0), (pointsAdded >= 1008));
+		pointsAdded++;
 	}
 });
 
