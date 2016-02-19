@@ -13,9 +13,9 @@ Meteor.subscribe("temperature", function() {
 // Shift if we have one week of data (144 * 7 = 1008)
 Temperature.find({ ts: { $gt: new Date().getTime() - (7 * 24 * 60 * 60 * 1000) } }, { sort: { ts: 1 } }).observeChanges({
 	added: function(id, fields) {
-		chart.series[0].addPoint([fields['ts'], fields['humidity']], (!initializing || pointsAdded % 144 == 0), (pointsAdded >= 1008));
-		chart.series[1].addPoint([fields['ts'], fields['temperature']], (!initializing || pointsAdded % 144 == 0), (pointsAdded >= 1008));
 		pointsAdded++;
+		chart.series[0].addPoint([fields['ts'], fields['humidity']], (!initializing || pointsAdded % 144 == 0), (pointsAdded > 1008));
+		chart.series[1].addPoint([fields['ts'], fields['temperature']], (!initializing || pointsAdded % 144 == 0), (pointsAdded > 1008));
 	}
 });
 
